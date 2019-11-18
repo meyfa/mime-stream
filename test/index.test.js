@@ -9,10 +9,6 @@ const MimeStream = require("../index.js");
 
 describe("MimeStream", function () {
 
-    it("should construct when invoked as a function", function () {
-        expect(MimeStream()).to.be.instanceof(MimeStream);
-    });
-
     it("should pass through all chunks unmodified", function () {
         const obj = new MimeStream();
 
@@ -103,6 +99,31 @@ describe("MimeStream", function () {
             expect(type).to.to.deep.equal({ ext: "png", mime: "image/png" });
             done();
         }));
+    });
+
+    it("should not have 'type' setter", function (done) {
+        const obj = new MimeStream();
+
+        try {
+            obj.type = { ext: "foo", mime: "bar" };
+            done(new Error("type setter did not throw"));
+        } catch (e) {
+            done();
+        }
+    });
+
+    it("should provide copy to listeners", function (done) {
+        const obj = new MimeStream();
+
+        obj.on("type", function (type) {
+            type.ext = "jpg";
+            type.mime = "image/jpeg";
+            expect(obj.type).to.to.deep.equal({ ext: "png", mime: "image/png" });
+            done();
+        });
+
+        const data = fs.createReadStream(path.join(__dirname, "png.png"));
+        data.pipe(obj);
     });
 
 });

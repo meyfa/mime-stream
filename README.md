@@ -9,7 +9,7 @@ Node pass-through stream for MIME type detection.
 ## Install
 
 ```
-npm install --save mime-stream
+npm i mime-stream
 ```
 
 ## Usage

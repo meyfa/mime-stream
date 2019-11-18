@@ -1,13 +1,12 @@
 "use strict";
 
-const Transform = require("stream").Transform;
-const util = require("util");
+const stream = require("stream");
 
 const fileType = require("file-type");
 
 /**
- * Constructs a new duplex (Transform) stream that emits a 'type' event as soon
- * as the input's MIME type is known.
+ * Duplex (Transform) stream that emits a 'type' event as soon as the input's
+ * MIME type is known.
  *
  * The data itself is pushed through as-is.
  *
@@ -18,62 +17,81 @@ const fileType = require("file-type");
  * When the type is unknown or could not be detected (stream closed too early),
  * null is given instead of the event object.
  */
-function MimeStream(listener) {
-    // return new instance when invoked as function
-    if (!(this instanceof MimeStream)) {
-        return new MimeStream(listener);
+class MimeStream extends stream.Transform {
+    /**
+     * Constructor. Optionally a listener can be attached directly (but more can
+     * always be added).
+     *
+     * @param {Function} listener Listener to attach immediately.
+     */
+    constructor (listener) {
+        super();
+
+        this._type = null;
+
+        this._chunkBuffer = {
+            chunks: [],
+            length: 0,
+        };
+        this._typeEmitted = false;
+
+        // bind listener
+        if (typeof listener === "function") {
+            this.on("type", listener);
+        }
     }
-    // super()
-    Transform.call(this);
 
-    this.type = null;
+    /**
+     * The detected type, or null if unknown / still waiting for more data.
+     *
+     * @type {String|null}
+     */
+    get type () {
+        return this._type ? {
+            ext: this._type.ext,
+            mime: this._type.mime,
+        } : null;
+    }
 
-    this._chunkBuffer = {
-        chunks: [],
-        length: 0,
-    };
-    this._typeEmitted = false;
+    /**
+     * @override
+     */
+    _transform (chunk, encoding, cb) {
+        // do not emit twice
+        if (this._typeEmitted) {
+            return cb(null, chunk);
+        }
 
-    // bind listener
-    if (typeof listener === "function") {
-        this.on("type", listener);
+        this._chunkBuffer.chunks.push(chunk);
+        this._chunkBuffer.length += chunk.length;
+
+        // try to detect
+        const detection = fileType(Buffer.concat(this._chunkBuffer.chunks));
+
+        // if type known or limit exceeded, emit
+        // (file-type guarantees that it needs at most 'minimumBytes' bytes)
+        if (detection || this._chunkBuffer.length >= fileType.minimumBytes) {
+            this._type = detection;
+            this.emit("type", this.type);
+            this._typeEmitted = true;
+        }
+
+        cb(null, chunk);
+    }
+
+    /**
+     * @override
+     */
+    _flush (cb) {
+        // emit null if there was no detection at all
+        if (!this._typeEmitted) {
+            this._type = null;
+            this.emit("type", this.type);
+            this._typeEmitted = true;
+        }
+
+        cb();
     }
 }
-
-util.inherits(MimeStream, Transform);
-
-MimeStream.prototype._transform = function (chunk, encoding, cb) {
-    // do not emit twice
-    if (this._typeEmitted) {
-        return cb(null, chunk);
-    }
-
-    this._chunkBuffer.chunks.push(chunk);
-    this._chunkBuffer.length += chunk.length;
-
-    // try to detect
-    const detection = fileType(Buffer.concat(this._chunkBuffer.chunks));
-
-    // if type known or limit exceeded, emit
-    // (file-type guarantees that it needs at most 4100 bytes)
-    if (detection || this._chunkBuffer.length >= 4100) {
-        this.type = detection;
-        this.emit("type", this.type);
-        this._typeEmitted = true;
-    }
-
-    cb(null, chunk);
-};
-
-MimeStream.prototype._flush = function (cb) {
-    // emit null if there was no detection at all
-    if (!this._typeEmitted) {
-        this.type = null;
-        this.emit("type", this.type);
-        this._typeEmitted = true;
-    }
-
-    cb();
-};
 
 module.exports = MimeStream;
