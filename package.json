@@ -1,6 +1,6 @@
 {
   "name": "mime-stream",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Pass-through stream for MIME type detection",
   "main": "index.js",
   "scripts": {
