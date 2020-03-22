@@ -6,6 +6,16 @@
 
 Node pass-through stream for MIME type detection.
 
+## DEPRECATION
+
+This package depends on [`sindresorhus/file-type`](https://www.npmjs.com/package/file-type),
+adding its own interface on top.
+Nowadays, `file-type` provides a pass-through stream right out of the box.
+Hence, this package has become obsolete. It will _at most_ receive critical
+security updates.
+
+**Do not use `mime-stream` in new projects, and migrate old projects away.**
+
 ## Install
 
 ```
