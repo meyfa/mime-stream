@@ -25,15 +25,15 @@ when the stream is closed prematurely.
 Example:
 
 ```javascript
-const fs = require("fs");
-const MimeStream = require("mime-stream");
+const fs = require('fs')
+const MimeStream = require('mime-stream')
 
-let stream = new MimeStream();
-stream.on("type", function (type) {
-    console.log(type); // { ext: "png", mime: "image/png" }
-});
+const stream = new MimeStream()
+stream.on('type', function (type) {
+  console.log(type) // { ext: 'png', mime: 'image/png' }
+})
 
-fs.createReadStream("myimage.png").pipe(stream);
+fs.createReadStream('myimage.png').pipe(stream)
 ```
 
 You could also add more `.pipe()` calls to the chain. `MimeStream` is
@@ -47,13 +47,13 @@ concise.
 Example:
 
 ```javascript
-const fs = require("fs");
-const MimeStream = require("mime-stream");
+const fs = require('fs')
+const MimeStream = require('mime-stream')
 
 // `new` is optional anyway
-fs.createReadStream("myimage.png").pipe(MimeStream((type) => {
-    console.log(type); // { ext: "png", mime: "image/png" }
-}));
+fs.createReadStream('myimage.png').pipe(MimeStream((type) => {
+  console.log(type) // { ext: 'png', mime: 'image/png' }
+}))
 ```
 
 ### Property
@@ -62,7 +62,7 @@ After detection, the detection result is also available inside the `type`
 property. Example:
 
 ```javascript
-stream.on("end", function () {
-    console.log(stream.type); // { ext: "png", mime: "image/png" }
-});
+stream.on('end', function () {
+  console.log(stream.type) // { ext: 'png', mime: 'image/png' }
+})
 ```
