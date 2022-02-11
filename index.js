@@ -2,7 +2,9 @@
 
 const stream = require('stream')
 
-const fileType = require('file-type')
+const FileType = require('file-type')
+
+const MIN_BYTES = 4100
 
 /**
  * Duplex (Transform) stream that emits a 'type' event as soon as the input's
@@ -66,15 +68,15 @@ class MimeStream extends stream.Transform {
     this._chunkBuffer.length += chunk.length
 
     // try to detect
-    const detection = fileType(Buffer.concat(this._chunkBuffer.chunks))
-
-    // if type known or limit exceeded, emit
-    // (file-type guarantees that it needs at most 'minimumBytes' bytes)
-    if (detection || this._chunkBuffer.length >= fileType.minimumBytes) {
-      this._type = detection
-      this.emit('type', this.type)
-      this._typeEmitted = true
-    }
+    FileType.fromBuffer(Buffer.concat(this._chunkBuffer.chunks)).then((detection) => {
+      // if type known or limit exceeded, emit
+      // (file-type guarantees that it needs at most 'minimumBytes' bytes)
+      if (!this._typeEmitted && (detection != null || this._chunkBuffer.length >= MIN_BYTES)) {
+        this._type = detection
+        this.emit('type', this.type)
+        this._typeEmitted = true
+      }
+    })
 
     cb(null, chunk)
   }
