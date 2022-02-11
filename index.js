@@ -22,7 +22,7 @@ class MimeStream extends stream.Transform {
    * Constructor. Optionally a listener can be attached directly (but more can
    * always be added).
    *
-   * @param {Function} listener Listener to attach immediately.
+   * @param {?Function} listener Listener to attach immediately.
    */
   constructor (listener) {
     super()
@@ -44,13 +44,13 @@ class MimeStream extends stream.Transform {
   /**
    * The detected type, or null if unknown / still waiting for more data.
    *
-   * @type {String|null}
+   * @type {Object|null}
    */
   get type () {
-    return this._type ? {
-      ext: this._type.ext,
-      mime: this._type.mime
-    } : null
+    if (this._type != null) {
+      return { ext: this._type.ext, mime: this._type.mime }
+    }
+    return null
   }
 
   /**

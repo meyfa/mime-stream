@@ -1,6 +1,0 @@
-.gitattributes
-.gitignore
-/test
-.travis.yml
-/.nyc_output
-/coverage

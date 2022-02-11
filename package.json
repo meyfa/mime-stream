@@ -3,6 +3,9 @@
   "version": "2.1.0",
   "description": "Pass-through stream for MIME type detection",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "lint": "standard",
     "lint-fix": "standard --fix",
@@ -31,10 +34,10 @@
     "node": ">=8.0.0"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^7.1.1",
-    "nyc": "^15.0.0",
-    "standard": "^14.3.3"
+    "chai": "^4.3.6",
+    "mocha": "^9.2.0",
+    "nyc": "^15.1.0",
+    "standard": "^16.0.4"
   },
   "dependencies": {
     "file-type": "^12.4.2"
