@@ -1,6 +1,6 @@
 # mime-stream
 
-[![Build Status](https://travis-ci.com/meyfa/mime-stream.svg?branch=master)](https://travis-ci.com/meyfa/mime-stream)
+[![CI](https://github.com/meyfa/mime-stream/actions/workflows/main.yml/badge.svg)](https://github.com/meyfa/mime-stream/actions/workflows/main.yml)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/967ee21b11d6972d342a/test_coverage)](https://codeclimate.com/github/meyfa/mime-stream/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/967ee21b11d6972d342a/maintainability)](https://codeclimate.com/github/meyfa/mime-stream/maintainability)
 
