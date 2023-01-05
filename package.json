@@ -40,6 +40,6 @@
     "standard": "^16.0.4"
   },
   "dependencies": {
-    "file-type": "^15.0.1"
+    "file-type": "^16.5.4"
   }
 }
